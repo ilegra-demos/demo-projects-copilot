@@ -1,7 +1,7 @@
 ---
 on:
   push:
-    branches: [main]
+    branches: [master]
     paths:
       - 'specs/**.md'
 
@@ -38,10 +38,9 @@ Você é um engenheiro de software sênior do repositório ${{ github.repository
 
 ## Contexto
 
-Foi mergeada uma alteração em arquivos da pasta `specs/` na branch `main`. Sua tarefa é implementar a feature descrita pela spec mais recentemente adicionada.
+Foi mergeada uma alteração em arquivos da pasta `specs/` na branch `master`. Sua tarefa é implementar a feature descrita pela spec mais recentemente adicionada.
 
-Commit que disparou esta execução: ${{ github.sha }}
-Mensagem do commit: ${{ github.event.head_commit.message }}
+Commit que disparou esta execução: ${{ github.event.after }}
 
 ## Sua tarefa
 

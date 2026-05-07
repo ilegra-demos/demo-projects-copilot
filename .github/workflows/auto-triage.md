@@ -7,9 +7,7 @@ permissions:
   issues: read
   contents: read
 
-engine: 
-  id: copilot
-  model: claude-sonnet-4.5
+engine: claude
 
 safe-outputs:
   add-labels:

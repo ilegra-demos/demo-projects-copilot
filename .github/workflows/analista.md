@@ -40,7 +40,7 @@ Você é um analista técnico de requisitos para o repositório ${{ github.repos
 ## Contexto
 
 A issue alvo é a #${{ github.event.issue.number }} — "${{ github.event.issue.title }}".
-Esta workflow só dispara quando a label `precisa-spec` é aplicada à issue.
+Esta workflow só dispara quando o comentario `/spec` é aplicada à issue.
 
 ## Sua tarefa
 

@@ -1,8 +1,8 @@
-from typing import List
+from typing import List, Optional
 
 from fastapi import FastAPI, HTTPException, status
 
-from app.models import Task, TaskCreate, TaskUpdate
+from app.models import Priority, Task, TaskCreate, TaskUpdate
 from app.storage import storage
 
 app = FastAPI(
@@ -23,8 +23,8 @@ def create_task(payload: TaskCreate) -> Task:
 
 
 @app.get("/tasks", response_model=List[Task])
-def list_tasks() -> List[Task]:
-    return storage.list_all()
+def list_tasks(priority: Optional[Priority] = None) -> List[Task]:
+    return storage.list_all(priority=priority)
 
 
 @app.get("/tasks/{task_id}", response_model=Task)

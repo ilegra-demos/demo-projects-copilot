@@ -54,25 +54,3 @@ class TaskStorage:
 
 
 storage = TaskStorage()
-
-    def update(self, task_id: int, payload: TaskUpdate) -> Optional[Task]:
-        task = self._tasks.get(task_id)
-        if task is None:
-            return None
-        data = task.model_dump()
-        for field, value in payload.model_dump(exclude_unset=True).items():
-            data[field] = value
-        updated = Task(**data)
-        self._tasks[task_id] = updated
-        return updated
-
-    def delete(self, task_id: int) -> bool:
-        return self._tasks.pop(task_id, None) is not None
-
-    def reset(self) -> None:
-        """Apenas para testes."""
-        self._tasks.clear()
-        self._next_id = 1
-
-
-storage = TaskStorage()

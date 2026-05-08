@@ -18,6 +18,10 @@ safe-outputs:
       - precisa-revisao
     draft: false
     max: 1
+    allowed-files:
+      - "app/**"
+      - "tests/**"
+      - "README.md"
 
 tools:
   github:

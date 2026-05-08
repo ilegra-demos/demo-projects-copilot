@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Dict, List, Optional
 
-from app.models import Task, TaskCreate, TaskUpdate
+from app.models import Priority, Task, TaskCreate, TaskUpdate
 
 
 class TaskStorage:
@@ -17,17 +17,43 @@ class TaskStorage:
             title=payload.title,
             description=payload.description,
             completed=False,
+            priority=payload.priority,
             created_at=datetime.utcnow(),
         )
         self._tasks[task.id] = task
         self._next_id += 1
         return task
 
-    def list_all(self) -> List[Task]:
-        return list(self._tasks.values())
+    def list_all(self, priority: Optional[Priority] = None) -> List[Task]:
+        tasks = list(self._tasks.values())
+        if priority is not None:
+            tasks = [t for t in tasks if t.priority == priority]
+        return tasks
 
     def get(self, task_id: int) -> Optional[Task]:
         return self._tasks.get(task_id)
+
+    def update(self, task_id: int, payload: TaskUpdate) -> Optional[Task]:
+        task = self._tasks.get(task_id)
+        if task is None:
+            return None
+        data = task.model_dump()
+        for field, value in payload.model_dump(exclude_unset=True).items():
+            data[field] = value
+        updated = Task(**data)
+        self._tasks[task_id] = updated
+        return updated
+
+    def delete(self, task_id: int) -> bool:
+        return self._tasks.pop(task_id, None) is not None
+
+    def reset(self) -> None:
+        """Apenas para testes."""
+        self._tasks.clear()
+        self._next_id = 1
+
+
+storage = TaskStorage()
 
     def update(self, task_id: int, payload: TaskUpdate) -> Optional[Task]:
         task = self._tasks.get(task_id)

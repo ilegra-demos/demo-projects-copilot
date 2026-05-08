@@ -87,3 +87,66 @@ def test_delete_task():
 def test_create_task_validation():
     response = client.post("/tasks", json={"title": ""})
     assert response.status_code == 422
+
+
+# --- Testes de prioridade (feature-30) ---
+
+def test_create_task_default_priority():
+    response = client.post("/tasks", json={"title": "Sem prioridade"})
+    assert response.status_code == 201
+    assert response.json()["priority"] == "media"
+
+
+def test_create_task_with_priority_alta():
+    response = client.post("/tasks", json={"title": "Urgente", "priority": "alta"})
+    assert response.status_code == 201
+    assert response.json()["priority"] == "alta"
+
+
+def test_create_task_invalid_priority():
+    response = client.post("/tasks", json={"title": "Invalida", "priority": "urgente"})
+    assert response.status_code == 422
+
+
+def test_list_tasks_all_have_priority_field():
+    client.post("/tasks", json={"title": "T1", "priority": "alta"})
+    client.post("/tasks", json={"title": "T2", "priority": "baixa"})
+    response = client.get("/tasks")
+    assert response.status_code == 200
+    for task in response.json():
+        assert "priority" in task
+
+
+def test_list_tasks_filter_by_priority():
+    client.post("/tasks", json={"title": "Alta 1", "priority": "alta"})
+    client.post("/tasks", json={"title": "Baixa 1", "priority": "baixa"})
+    client.post("/tasks", json={"title": "Baixa 2", "priority": "baixa"})
+    response = client.get("/tasks?priority=baixa")
+    assert response.status_code == 200
+    body = response.json()
+    assert len(body) == 2
+    assert all(t["priority"] == "baixa" for t in body)
+
+
+def test_list_tasks_filter_invalid_priority():
+    response = client.get("/tasks?priority=invalido")
+    assert response.status_code == 422
+
+
+def test_patch_task_updates_priority():
+    create = client.post("/tasks", json={"title": "Original", "priority": "baixa"})
+    task_id = create.json()["id"]
+    response = client.patch(f"/tasks/{task_id}", json={"priority": "alta"})
+    assert response.status_code == 200
+    body = response.json()
+    assert body["priority"] == "alta"
+    assert body["title"] == "Original"
+    assert body["completed"] is False
+
+
+def test_get_task_includes_priority():
+    create = client.post("/tasks", json={"title": "Com prioridade", "priority": "media"})
+    task_id = create.json()["id"]
+    response = client.get(f"/tasks/{task_id}")
+    assert response.status_code == 200
+    assert response.json()["priority"] == "media"
